@@ -1,0 +1,171 @@
+
+
+\title{AI agent plays Isolation Game}
+\author{
+        Jean-Marc Beaujour, \\
+        AI Nanodegree Project Report}
+\date{\today}
+
+\documentclass[12pt]{article}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{amsmath,amsfonts,amssymb}
+\begin{document}
+\maketitle
+
+\begin{abstract}
+
+We develop an AI agent for playing the game of Isolation. The game consists of a board and 2 players who take turn in filling up the board/grid, where the positions occupied in previous moves are not available for all future moves. The goal is to prevent the opponent any more moves.
+
+\end{abstract}
+
+\section{Introduction}
+To provide the AI agent with the best next move, we implement:
+\begin{enumerate}
+\item a minimax algorithm for searching the game tree
+\item alpha-beta pruning to improve the efficiency of tree search
+\item Iterative Deepening to improve the time efficiency
+\item custom heuristic evaluation function to further improve the AI performance.
+\end{enumerate}
+Several Heuristic are proposed and their performance are compared to that of 'ID improved'.
+
+\section{Custom Heuristic Evaluation Functions}
+Four Heuristic evaluation functions ($f_{eval}$) are evaluated. The functions represent different ways of expressing the difference between the number of moves available for the AI agent ($N_{AI}$) and that of the opponent $N_{opp}$. 
+
+\subsection{Heuristic 1}
+
+\begin{itemize}
+\item Mathematical expression:
+\begin{align}
+f_{eval} = \frac{N_{AI}}{N_{opp}}
+\end{align}
+\end{itemize}
+The evaluation function computes the ratio of the available moves of the player over the number of moves of the opponents. A large (a small) $f_{eval}$ , i.e $N_{AI} >> N_{opp}$  ($N_{AI} << N_{opp}$ ) favors a win (loss) for the player. Nevertheless, at the beginning of the game, $f_{eval}$ is likely to be in the lower range ($\approx 1$), because $N_{AI} \approx N_{opp}$.
+
+\begin{table}[H]
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+Match & opponent & ID\_Improved wins & Student wins & $\Delta$\\
+\hline
+ 1 & Random    &	19 to 1 & 19 to 1 & 0 \\
+ \hline
+  2 & MM\_Null   &	14 to 6 & 15 to 5 & +1 \\
+  \hline
+  3 &  MM\_Open  & 	14 to 6 & 12 to 8 & -2\\
+  \hline
+  4 &MM\_Improved &	10 to 10 & 13 to 7 & +3 \\
+  \hline
+  5 & AB\_Null   & 10 to 6 & 12 to 8 & +2 \\
+  \hline 
+  6 & AB\_Open  & 	12 to 8 & 8 to 12 & -4\\
+  \hline
+  7 & AB\_Improved & 9 to 11 & 11 to 9 & +2 \\
+  \hline
+  average & & 62.86\% & 64.29\% & + 1.43\%\\
+  \hline
+\end{tabular}
+\end{table}
+
+
+\subsection{Heuristic 2}
+\begin{itemize}
+\item Mathematical expression:
+\begin{align}
+f = \frac{N_{AI}}{N_{AI} + N{opp}}
+\end{align}
+\end{itemize}
+The evaluation function computes the percentage of total moves available for the player. In contrast to the previous Heuristic, here the evaluation function remains in the range [0, 1]. If $f_{eval} \rightarrow 0$, the opponent is likely to win, and if $f_{eval} \rightarrow 1$, the player is likely to win.
+\begin{table}[H]
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+Match & opponent & ID\_Improved wins & Student wins & $\Delta$\\
+\hline
+ 1 & Random    &	18 to 2 & 19 to 1 & +1 \\
+ \hline
+  2 & MM\_Null   &	18 to 2 & 17 to 3 & -1\\
+  \hline
+  3 &  MM\_Open  & 	7 to 13 & 8 to 12 & +1 \\
+  \hline
+  4 &MM\_Improved &	10 to 10 & 10 to 10 & 0 \\
+  \hline
+  5 & AB\_Null   & 13 to 7 & 14 to 6 & +1 \\
+  \hline 
+  6 & AB\_Open  & 	9 to 11 & 12 to 8 & +3 \\
+  \hline
+  7 & AB\_Improved & 9 to 11 & 9 to 11 & 0\\
+  \hline
+  average & & 60.00\% & 63.57\% & +3.57\%\\
+  \hline
+\end{tabular}
+\end{table}
+
+\subsection{Heuristic 3}
+\begin{itemize}
+\item Mathematical expression:
+\begin{align}
+f_{eval} = \frac{N_{AI} - N_{opp}}{N_{opp}}
+\end{align}
+\end{itemize}
+The evaluation function computes the difference between the moves available for the player and the opponent available moves, and normalize the difference by number of opponent moves. When $N_{AI} >> N_{opp}$, then $f_eval$ is large and positive. In contrast, if $N_{AI} << N_{opp}$,  $f_eval$ is small and negative.
+\begin{table}[H]
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+Match & opponent & ID\_Improved wins & Student wins & $\Delta$\\
+\hline
+ 1 & Random    &	18 to 2 & 18 to 2 & 0\\
+ \hline
+  2 & MM\_Null   &	17 to 3 & 18 to 2 & +1\\
+  \hline
+  3 &  MM\_Open  & 	13 to 7 & 9 to 11 & -4\\
+  \hline
+  4 &MM\_Improved &	10 to 10 & 13 to 7 & +3\\
+  \hline
+  5 & AB\_Null   & 15 to 5 & 10 to 10 & -5\\
+  \hline 
+  6 & AB\_Open  & 	9 to 11 & 10 to 10 & +1\\
+  \hline
+  7 & AB\_Improved & 10 to 10 & 9 to 11 & -1\\
+  \hline
+  average & & 65.71\% & 62.14\% & -3.57\%\\
+  \hline
+\end{tabular}
+\end{table}
+
+\subsection{Heuristic 4}
+\begin{itemize}
+\item Mathematical expression:
+\begin{align}
+f_{eval} = \frac{2 * N_{AI} - N_{opp}}{N_{opp}}
+\end{align}
+\end{itemize}
+In this function, we calculate the weighted difference between the number of available moves for the player vs. that of the opponent. This value is normalized to the number of moves of the opponent. In the numerator, the player's moves are set to be worth 2 times more than the opponent moves. 
+
+\begin{table}[H]
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+Match & opponent & ID\_Improved wins & Student wins & $\Delta$\\
+\hline
+ 1 & Random    &	20 to 0 & 19 to 1 & +1\\
+ \hline
+  2 & MM\_Null   &	16 to 4 & 12 to 8 & -4\\
+  \hline
+  3 &  MM\_Open  & 	12 to 8 & 9 to 11 & -3\\
+  \hline
+  4 &MM\_Improved &	10 to 10 & 12 to 8 & +2 \\
+  \hline
+  5 & AB\_Null   & 14 to 6 & 16 to 4 & +2\\
+  \hline 
+  6 & AB\_Open  & 	12 to 8 & 5 to 15 & -7\\
+  \hline
+  7 & AB\_Improved & 9 to 11 & 9 to 11 & 0\\
+  \hline
+  average & & 66.43\% & 58.57\% & -7.86\%\\
+  \hline
+\end{tabular}
+\end{table}
+
+\subsection{Analysis}
+The best evaluation function is Heuristic 2 : it outperforms the `ID\_improved` model by 3.57 points. Interestingly, the evaluation function H1 is also better than `ID\_improved` but with a smaller margin. This would suggest that it is more important to track the percentage of moves available for the player among all the available moves. 
+
+\end{document}
+  
